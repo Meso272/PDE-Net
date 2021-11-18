@@ -98,7 +98,7 @@ for block in blocks:
     # layerweight = list(1/(stepnum+1-i)**2 for i in range(1,stepnum+1))
     # generate data
     if name=="myheat":
-        data_folder="/home/jliu447/lossycompression/heat_128_100_rd"
+        data_folder="/home/jinyang.liu/lossycompression/heat_128_100_rd"
         start_idx=0
         end_idx=10000
         size_x=128

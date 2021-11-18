@@ -13,7 +13,7 @@
 - 18
 --cell_num: 1
 --channel_names: u
---constraint: free
+--constraint: frozen
 --data_start_time: 0.0
 --data_timescheme: rk2
 --dataname: heat

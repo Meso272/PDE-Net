@@ -151,6 +151,7 @@ def data(model, data_model, globalnames, sampling, addnoise, block, data_start_t
         u0=data_array[indices]
         u=[u0,]
         u0_true=u0
+        u_true = [u0_true,]
         u0_obs=addnoise(copy.deepcopy(u0))
         u_obs=[u0_obs,]
         ut=u0

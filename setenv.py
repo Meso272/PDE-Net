@@ -8,7 +8,8 @@ import aTEAM.pdetools.example.rd2d as rd2d
 import aTEAM.pdetools.example.cdr2d as cdr2d
 import polypde
 import conf,transform,setcallback
-
+import random
+import copy
 __all__ = ['setenv',]
 
 def _set_model(options):
@@ -126,7 +127,7 @@ def setenv(options):
 
     return globalnames, callback, model, data_model, sampling, addnoise
 
-def data(model, data_model, globalnames, sampling, addnoise, block, data_start_time=1):
+def data(model, data_model, globalnames, sampling, addnoise, block, data_start_time=1,my_data=None,data_array=None):
     """
     generate data 
     Returns:
@@ -134,9 +135,45 @@ def data(model, data_model, globalnames, sampling, addnoise, block, data_start_t
         u_true(list of torch.tensor): underlying data
         u(list of torch.tensor): underlying high resolution data
     """
+
+
     freq, batch_size, device, dtype, dt = \
             globalnames['freq'], globalnames['batch_size'], \
             globalnames['device'], globalnames['dtype'], globalnames['dt']
+
+
+    if my_data=="myheat":
+        stepnum = block if block>=1 else 1
+        #Dataarray:NXCXHXW
+        num_samples=data_array.shape[0]
+        indices=random.sample(range(num_samples-stepnum),batch_size)
+        u0=data_array[indices]
+        u=[u0,]
+        u0_true=u0
+        u0_obs=addnoise(copy.deepcopy(u0))
+        u_obs=[u0_obs,]
+        ut=u0
+        with torch.no_grad():
+            for t in range(stepnum):
+                indices_t=[i+t+1 for i in indices]
+                ut = data_array[indices_t]
+                u.append(ut)
+                ut_true = ut
+                u_true.append(ut_true)
+                _, ut_obs = addnoise(copy.deepcopy(u0_true), copy.deepcopy(ut_true))
+                u_obs.append(ut_obs)
+
+        
+
+
+        return u_obs,u_true,u
+
+
+
+
+
+
+
     initrange = 2
     initshift = (1 if (globalnames['dataname']=='reactiondiffusion') else 2)
     # initshift = 1

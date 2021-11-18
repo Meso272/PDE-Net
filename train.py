@@ -1,4 +1,5 @@
 #%%
+import os
 import sys,time
 import numpy as np
 import torch
@@ -71,6 +72,9 @@ else: # load checkpoint of layer-$start_from
     callback.load(start_from, iternum='final')
 
 #%% train
+if name=="myheat":
+    pass#load data array
+
 for block in blocks:
     if block<=start_from:
         continue
@@ -93,7 +97,25 @@ for block in blocks:
     layerweight = [1,]*stepnum
     # layerweight = list(1/(stepnum+1-i)**2 for i in range(1,stepnum+1))
     # generate data
-    u_obs,u_true,u = \
+    if name=="myheat":
+        data_folder="/home/jliu447/lossycompression/heat_128_100_rd"
+        start_idx=0
+        end_idx=10000
+        size_x=128
+        size_y=128
+        my_data_array=np.zeros((end_idx-start_idx,1,size_x,size_y),dtype=np.double)
+        for i in range(start_idx,end_idx):
+            filename="%d.dat" % i
+            filepath=os.path.join(data_folder,filename)
+            my_data_array[i-start_idx,0,:,:]=np.fromfile(filepath,dtype=np.float32).reshape(size_x,size_y).astype(np.double)
+ 
+
+
+        u_obs,u_true,u = \
+            setenv.data(model,data_model,globalnames,sampling,addnoise,block,data_start_time,my_data="myheat",data_array=my_data_array)
+
+    else:
+        u_obs,u_true,u = \
             setenv.data(model,data_model,globalnames,sampling,addnoise,block,data_start_time)
     print("u_obs shape: batchsize x channelNum x xgridsize x ygridsize")
     print(u_obs[0].shape)
@@ -174,7 +196,7 @@ for block in blocks:
         except timeout_decorator.TimeoutError:
             with callback.open() as output:
                 print('Time out', file=output)
-#%%
+'''
 u_obs,u_true,u = \
         setenv.data(model,data_model,globalnames,sampling,addnoise,block=1,data_start_time=0)
 with callback.open() as output:
@@ -186,5 +208,4 @@ with torch.no_grad():
         print(model(u_obs[0], T=50*dt).abs().max(), file=output)
         print("model(u_obs[0],T=100*dt).abs().max()", file=output)
         print(model(u_obs[0], T=300*dt).abs().max(), file=output)
-#%%
-
+'''

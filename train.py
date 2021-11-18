@@ -103,11 +103,12 @@ for block in blocks:
         end_idx=10000
         size_x=128
         size_y=128
-        my_data_array=np.zeros((end_idx-start_idx,1,32,32),dtype=np.double)
+        mx=100
+        my_data_array=np.zeros((end_idx-start_idx,1,size_x,size_y),dtype=np.double)
         for i in range(start_idx,end_idx):
             filename="%d.dat" % i
             filepath=os.path.join(data_folder,filename)
-            my_data_array[i-start_idx,0,:,:]=np.fromfile(filepath,dtype=np.float32).reshape(size_x,size_y).astype(np.double)[50:82,50:82]
+            my_data_array[i-start_idx,0,:,:]=np.fromfile(filepath,dtype=np.float32).reshape(size_x,size_y).astype(np.double)/mx
  
 
 

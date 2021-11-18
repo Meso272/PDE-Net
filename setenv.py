@@ -145,6 +145,7 @@ def data(model, data_model, globalnames, sampling, addnoise, block, data_start_t
     if my_data=="myheat":
         stepnum = block if block>=1 else 1
         #Dataarray:NXCXHXW
+        data_array=torch.from_numpy(data_array).to(dtype=dtype,device=device)
         num_samples=data_array.shape[0]
         indices=random.sample(range(num_samples-stepnum),batch_size)
         u0=data_array[indices]
